@@ -1,0 +1,6 @@
+<html>
+<body>
+<p>Nickname: {{ user.nickname }}</p>
+<p>OpenID Identity: {{ user.openid_identity }}</p>
+</body>
+</html>

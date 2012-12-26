@@ -1,0 +1,8 @@
+<html>
+<body>
+Hello world
+
+<a href="{{ auth_url }}">bob</a>
+
+</body>
+</html>
