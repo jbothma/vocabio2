@@ -16,12 +16,12 @@ Features
 --------
 
 * OpenID authentication
+* Add word
+* List words
 
 Desired features
 ----------------
 
-* Add word
-* List words
 * Delete words
 * known/unknown status on word
 * store word context
