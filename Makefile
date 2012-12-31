@@ -1,7 +1,12 @@
 all: compile
 
+small: compile_small
+
 compile: get-deps
 	rebar compile
+
+compile_small:
+	rebar compile skip_deps=true
 
 get-deps:
 	rebar get-deps

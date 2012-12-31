@@ -21,7 +21,8 @@ request('GET', [], Req) ->
     %% session userid to restrict access to the user resource
     {UserID, Req2} = cowboy_http_req:binding(userid, Req1),
     {ok, User} = vbo_model_user:get(UserID),
-    ViewData = [{<<"user">>, User}],
+    ViewData = [{<<"user">>, User},
+                {<<"userid">>, UserID}],
     {ok, IOData} = vbo_view_user_userid_dtl:render(ViewData),
     {200, IOData, Req2}.
 

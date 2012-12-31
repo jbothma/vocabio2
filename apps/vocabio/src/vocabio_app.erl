@@ -14,6 +14,7 @@
 %% ===================================================================
 
 start() ->
+    {ok, _} = reloader:start(),
     ok = application:start(compiler),
     ok = application:start(syntax_tools),
     ok = application:start(lager),
@@ -36,6 +37,7 @@ start(_StartType, _StartArgs) ->
                 {'_', [ {[<<"auth">>, <<"openid">>, '...'], res_auth, []}
                        ,{[<<"user">>], res_user, []}
                        ,{[<<"user">>, userid], res_user_userid, []}
+                       ,{[<<"user">>, userid, <<"word">>], res_user_userid_word, []}
                       ]}
                ],
     %% Name, NbAcceptors, Transport, TransOpts, Protocol, ProtoOpts

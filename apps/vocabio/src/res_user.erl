@@ -30,7 +30,7 @@ request('POST', [], Req) ->
     {ok, OpenIDIdentity} = vbo_session:get(Session, openid_identity),
     %% for now, just crash if they already have a user object. They shouldn't
     %% be posting this form and a better error response can be provided later.
-    case vbo_model_user:get_by_openid(OpenIDIdentity) of
+    case vbo_model_user:get_id_by_openid(OpenIDIdentity) of
         {ok, notfound} ->
             {POSTVars, Req2} = cowboy_http_req:body_qs(Req1),
             {_, Nickname} = lists:keyfind(<<"nickname">>, 1, POSTVars),
@@ -41,7 +41,7 @@ request('POST', [], Req) ->
             IOData = [<<"registered! now you can return to /auth/openid to "
                         "authenticate and your session id will grant you access"
                         " to your resources. The new resource is at ">>, Location],
-            Req3 = cowboy_http_req:set_resp_header(<<"Location">>, Location, Req2),
+            {ok, Req3} = cowboy_http_req:set_resp_header(<<"Location">>, Location, Req2),
             {201, IOData, Req3}
     end.
 

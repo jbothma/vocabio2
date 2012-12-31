@@ -1,0 +1,14 @@
+{% extends "base.dtl" %}
+
+{% block content %}
+
+<form name="input" action="/user/{{ userid }}/word" method="post">
+  Word: <input type="text" name="word" />
+  <input type="submit" value="Submit" />
+</form>
+
+{% for word in user_words %}
+  <p>{{ word }} /user/{{ userid }}/word/{{ word | urlencode }}</p>
+{% endfor %}
+
+{% endblock %}
