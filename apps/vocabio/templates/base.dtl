@@ -1,12 +1,23 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN'
     'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+{% autoescape on %}
 <html xmlns='http://www.w3.org/1999/xhtml'>
 <head>
 <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
 </head>
 <body>
+  <div>
+    {% if userid %}
+    <a href="/user/{{ userid }}">Profile</a>
+    |
+    <a href="/user/{{ userid }}/word">Words</a>
+    {% else %}
+    <a href="/auth/openid">Login / Register</a>
+    {% endif %}
+  </div>
 {% block content %}
 {% endblock %}
 </body>
 </html>
+{% endautoescape %}

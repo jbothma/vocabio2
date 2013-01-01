@@ -1,7 +1,9 @@
-<html>
-<body>
+{% extends "base.dtl" %}
+
+{% block content %}
+
 <p>Nickname: {{ user.nickname }}</p>
 <p>OpenID Identity: {{ user.openid_identity }}</p>
-<p>Words at /user/{{ userid }}/word
-</body>
-</html>
+<p>Words at /user/{{ userid }}/word</p>
+
+{% endblock %}

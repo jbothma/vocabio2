@@ -38,7 +38,9 @@ request(_Method, [<<"return">>], Req) ->
             {Body, Req2};
         {ok, UserID} ->
             ok = vbo_session:set(Session, user_id, UserID),
-            {<<"you're logged in">>, Req2}
+            ViewData = [{<<"userid">>, UserID}],
+            {ok, IOData} = base_dtl:render(ViewData),
+            {IOData, Req2}
     end.
 
 

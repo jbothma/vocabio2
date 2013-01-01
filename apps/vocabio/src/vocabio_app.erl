@@ -34,7 +34,9 @@ start() ->
 start(_StartType, _StartArgs) ->
     Dispatch = [
                  %% {Host, list({Path, Handler, Opts})}
-                {'_', [ {[<<"auth">>, <<"openid">>, '...'], res_auth, []}
+                {'_', [
+                        {[], res_home, []}
+                       ,{[<<"auth">>, <<"openid">>, '...'], res_auth, []}
                        ,{[<<"user">>], res_user, []}
                        ,{[<<"user">>, userid], res_user_userid, []}
                        ,{[<<"user">>, userid, <<"word">>], res_user_userid_word, []}

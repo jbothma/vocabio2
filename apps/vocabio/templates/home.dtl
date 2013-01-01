@@ -1,8 +1,7 @@
-<html>
-<body>
-Hello world
+{% extends "base.dtl" %}
 
-<a href="{{ auth_url }}">bob</a>
+{% block content %}
 
-</body>
-</html>
+<a href="{{ auth_url }}">Authenticate with your Google ID</a>
+
+{% endblock %}

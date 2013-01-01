@@ -1,10 +1,10 @@
-<html>
-<body>
+{% extends "base.dtl" %}
+
+{% block content %}
 
 <form name="input" action="/user" method="post">
   Nickname: <input type="text" name="nickname">
   <input type="submit" value="Submit">
 </form>
 
-</body>
-</html>
+{% endblock %}

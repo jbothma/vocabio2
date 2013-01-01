@@ -20,7 +20,9 @@ request('GET', [], Req) ->
         {ok, notfound} ->
             {200, <<"User resources can be requested at /user/USERID">>, Req1};
         {ok, UserID} ->
-            {200, [<<"your user resource is at /user/">>,UserID], Req1}
+            ViewData = [{<<"userid">>, UserID}],
+            {ok, IoData} = base_dtl:render(ViewData),
+            {200, IoData, Req1}
     end;
 request('POST', undefined, Req) ->
     request('POST', [], Req);

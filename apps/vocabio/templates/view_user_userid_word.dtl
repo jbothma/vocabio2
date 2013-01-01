@@ -8,7 +8,7 @@
 </form>
 
 {% for word in user_words %}
-  <p>{{ word }} /user/{{ userid }}/word/{{ word | urlencode }}</p>
+  <p><a href="/user/{{ userid }}/word/{{ word | urlencode }}">{{ word }}</a></p>
 {% endfor %}
 
 {% endblock %}
