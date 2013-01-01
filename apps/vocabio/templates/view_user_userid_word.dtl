@@ -8,7 +8,12 @@
 </form>
 
 {% for word in user_words %}
-  <p><a href="/user/{{ userid }}/word/{{ word | urlencode }}">{{ word }}</a></p>
+  <p>
+    <a href="/user/{{ userid }}/word/{{ word | urlencode }}">{{ word }}</a>
+    <form name="delete_{{ word | urlencode }}" action="/user/{{ userid }}/word/{{ word | urlencode }}/delete" method="POST">
+      <input type="submit" value="delete"/>
+    </form>
+  </p>
 {% endfor %}
 
 {% endblock %}
