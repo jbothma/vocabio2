@@ -6,3 +6,4 @@ ebin/
 *.plt
 log/
 erl_crash.dump
+rel/vocabio/
