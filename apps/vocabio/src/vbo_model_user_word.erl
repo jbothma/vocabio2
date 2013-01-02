@@ -3,6 +3,7 @@
 -export([
          new/1
          ,get/2
+         ,delete/2
         ]).
 
 -define(KEY(UserID, WordID),
@@ -20,3 +21,9 @@ get(UserID, Word) ->
     NormalizedWord = vbo_unicode:normalize(nfc, Word),
     Key = ?KEY(UserID, NormalizedWord),
     vbo_db:get(<<"user_word">>, Key).
+
+delete(UserID, Word) ->
+    NormalizedWord = vbo_unicode:normalize(nfc, Word),
+    Key = ?KEY(UserID, NormalizedWord),
+    ok = vbo_db:delete(<<"user_word">>, Key),
+    {ok, NormalizedWord}.

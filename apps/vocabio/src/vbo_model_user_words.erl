@@ -2,6 +2,7 @@
 
 -export([
          add_word/2
+         ,delete_word/2
          ,get/1
         ]).
 
@@ -31,6 +32,13 @@ add_word(UserID, WordData) ->
         end,
     ok = vbo_db:put(<<"user_words">>, UserID, UserWords2),
     {ok, Word2}.
+
+delete_word(UserID, Word) ->
+    {ok, UserWords} = vbo_db:get(<<"user_words">>, UserID),
+    {ok, Word1} = vbo_model_user_word:delete(UserID, Word),
+    %% Delete the normalized utf8 form returned by vbo_model_user_word
+    UserWords1 = lists:delete(Word1, UserWords),
+    ok = vbo_db:put(<<"user_words">>, UserID, UserWords1).
 
 get(UserID) ->
     case vbo_db:get(<<"user_words">>, UserID) of

@@ -32,16 +32,19 @@ start() ->
     ok.
 
 start(_StartType, _StartArgs) ->
-    Dispatch = [
-                 %% {Host, list({Path, Handler, Opts})}
-                {'_', [
-                        {[], res_home, []}
-                       ,{[<<"auth">>, <<"openid">>, '...'], res_auth, []}
-                       ,{[<<"user">>], res_user, []}
-                       ,{[<<"user">>, userid], res_user_userid, []}
-                       ,{[<<"user">>, userid, <<"word">>], res_user_userid_word, []}
-                      ]}
-               ],
+    Dispatch =
+        [
+         %% {Host, list({Path, Handler, Opts})}
+         {'_', [
+                {[], res_home, []}
+                ,{[<<"auth">>, <<"openid">>, '...'], res_auth, []}
+                ,{[<<"user">>], res_user, []}
+                ,{[<<"user">>, userid], res_user_userid, []}
+                ,{[<<"user">>, userid, <<"word">>], res_user_userid_word, []}
+                ,{[<<"user">>, userid, <<"word">>, wordid, '...'],
+                  res_user_userid_word, []}
+               ]}
+        ],
     %% Name, NbAcceptors, Transport, TransOpts, Protocol, ProtoOpts
     cowboy:start_listener(my_http_listener, 100,
                           cowboy_tcp_transport, [{port, 8080}],

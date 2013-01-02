@@ -4,6 +4,7 @@
          new/2
          ,put/3
          ,get/2
+         ,delete/2
         ]).
 
 new(Bucket, Proplist) ->
@@ -38,5 +39,11 @@ get(Bucket, Key) ->
                  {error, notfound} ->
                      {ok, notfound}
              end,
+    poolboy:checkin(vbo_db_riak, Worker),
+    Result.
+
+delete(Bucket, Key) ->
+    Worker = poolboy:checkout(vbo_db_riak),
+    Result = riakc_pb_socket:delete(Worker, Bucket, Key),
     poolboy:checkin(vbo_db_riak, Worker),
     Result.
