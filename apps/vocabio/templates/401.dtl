@@ -1,0 +1,7 @@
+{% extends "base.dtl" %}
+
+{% block content %}
+
+Not authorized. Try <a href="/auth/openid">logging in</a> first.
+
+{% endblock %}

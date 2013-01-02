@@ -9,7 +9,6 @@
          ,post_from_form/2
          ,post_is_create/2
          ,to_text_html/2
-         ,process_post/2
          ,created_path/2
         ]).
 
@@ -31,7 +30,6 @@ is_authorized(Req, State) ->
     vbo_auth:is_authorized(Req, State).
 
 post_from_form(Req, State) ->
-io:format("post_from_form\n"),
     {UserID, Req1} = cowboy_http_req:binding(userid, Req),
     {POSTVars, Req2} = cowboy_http_req:body_qs(Req1),
     {_, Word} = lists:keyfind(<<"word">>, 1, POSTVars),
@@ -54,14 +52,7 @@ to_text_html(Req1, State) ->
     {ok, IOData} = view_user_userid_word_dtl:render(WordViewData),
     {IOData, Req2, State}.
 
-process_post(Req, State) ->
-io:format("process_post\n"),
-    %% This is sufficient while we just crash out if the post can't be
-    %% processed.
-    {true, Req, State}.
-
 post_is_create(Req, State) ->
-    io:format("post_is_create\n"),
     {true, Req, State}.
 
 created_path(Req, State) ->

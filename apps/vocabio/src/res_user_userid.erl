@@ -1,30 +1,29 @@
 -module(res_user_userid).
 
--export([init/3, handle/2, terminate/2]).
+-export([
+         init/3
+         ,allowed_methods/2
+         ,content_types_provided/2
+         ,is_authorized/2
+         ,to_text_html/2
+        ]).
 
-init({tcp, http}, Req, _Opts) ->
-    {ok, Req, undefined_state}.
+init(_Transport, _Req, _Opts) ->
+    {upgrade, protocol, cowboy_http_rest}.
 
-handle(Req, State) ->
-    {Path, Req1} = cowboy_http_req:path_info(Req),
-    {Method, Req2} = cowboy_http_req:method(Req1),
-    {Code, RespBody, Req3} = request(Method, Path, Req2),
-    {ok, Req4} = cowboy_http_req:reply(Code, [], RespBody, Req3),
-    {ok, Req4, State}.
+allowed_methods(Req, State) ->
+    {['GET'], Req, State}.
 
-request('GET', undefined, Req) ->
-    request('GET', [], Req);
-request('GET', [], Req) ->
-    {Session, Req1} = cowboy_session:from_req(Req),
-    {ok, UserID} = vbo_session:get(Session, user_id),
-    %% for now just crash if the resource userid doesn't match the
-    %% session userid to restrict access to the user resource
+content_types_provided(Req, State) ->
+    {[{{<<"text">>, <<"html">>, []}, to_text_html}], Req, State}.
+
+is_authorized(Req, State) ->
+    vbo_auth:is_authorized(Req, State).
+
+to_text_html(Req1, State) ->
     {UserID, Req2} = cowboy_http_req:binding(userid, Req1),
     {ok, User} = vbo_model_user:get(UserID),
     ViewData = [{<<"user">>, User},
                 {<<"userid">>, UserID}],
     {ok, IOData} = vbo_view_user_userid_dtl:render(ViewData),
-    {200, IOData, Req2}.
-
-terminate(_Req, _State) ->
-    ok.
+    {IOData, Req2, State}.

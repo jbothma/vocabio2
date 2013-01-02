@@ -13,8 +13,8 @@ is_authorized(Req, State) ->
         _ ->
             {ok, BaseURL} = application:get_env(vocabio, base_url),
             WWWAuthVal = ["OpenID ", BaseURL, "auth"],
-            Body = ["Unauthorized. Try authenticating at ", BaseURL,
-                    "auth first."],
+            ViewData = [<<"base_url">>, BaseURL],
+            {ok, Body} = '401_dtl':render(ViewData),
             {ok, Req2} = cowboy_http_req:set_resp_body(Body, Req1),
             {{false, WWWAuthVal}, Req2, State}
     end.

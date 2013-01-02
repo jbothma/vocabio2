@@ -4,6 +4,6 @@
 
 <p>Nickname: {{ user.nickname }}</p>
 <p>OpenID Identity: {{ user.openid_identity }}</p>
-<p>Words at /user/{{ userid }}/word</p>
+<p><a href="/user/{{ userid }}/word">Your words</a></p>
 
 {% endblock %}

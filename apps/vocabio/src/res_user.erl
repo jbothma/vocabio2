@@ -1,51 +1,64 @@
 -module(res_user).
 
--export([init/3, handle/2, terminate/2]).
+-export([
+         init/3
+         ,allowed_methods/2
+         ,content_types_accepted/2
+         ,content_types_provided/2
+         ,is_authorized/2
+         ,post_from_form/2
+         ,post_is_create/2
+         ,created_path/2
+        ]).
 
-init({tcp, http}, Req, _Opts) ->
-    {ok, Req, undefined_state}.
+init(_Transport, _Req, _Opts) ->
+    {upgrade, protocol, cowboy_http_rest}.
 
-handle(Req, State) ->
-    {Path, Req1} = cowboy_http_req:path_info(Req),
-    {Method, Req2} = cowboy_http_req:method(Req1),
-    {Code, RespBody, Req3} = request(Method, Path, Req2),
-    {ok, Req4} = cowboy_http_req:reply(Code, [], RespBody, Req3),
-    {ok, Req4, State}.
+allowed_methods(Req, State) ->
+    {['POST'], Req, State}.
 
-request('GET', undefined, Req) ->
-    request('GET', [], Req);
-request('GET', [], Req) ->
+content_types_accepted(Req, State) ->
+    Callbacks =
+        [{{<<"application">>, <<"x-www-form-urlencoded">>, []}, post_from_form}],
+    {Callbacks, Req, State}.
+
+content_types_provided(Req, State) ->
+    {[{{<<"text">>, <<"html">>, []}, to_text_html}], Req, State}.
+
+is_authorized(Req, State) ->
     {Session, Req1} = cowboy_session:from_req(Req),
-    case vbo_session:get(Session, user_id) of
+    {ok, BaseURL} = application:get_env(vocabio, base_url),
+    WWWAuthVal = ["OpenID ", BaseURL, "auth"],
+    Body = ["Unauthorized. An OpenID identity should be authenticated via ",
+            BaseURL, "auth first. A new user can only be created by an OpenID"
+            " identity that is not associated with an existing user."],
+    case vbo_session:get(Session, openid_identity) of
         {ok, notfound} ->
-            {200, <<"User resources can be requested at /user/USERID">>, Req1};
-        {ok, UserID} ->
-            ViewData = [{<<"userid">>, UserID}],
-            {ok, IoData} = base_dtl:render(ViewData),
-            {200, IoData, Req1}
-    end;
-request('POST', undefined, Req) ->
-    request('POST', [], Req);
-request('POST', [], Req) ->
-    {Session, Req1} = cowboy_session:from_req(Req),
-    %% for now, just crash if they dont have an OpenID ID set.
-    {ok, OpenIDIdentity} = vbo_session:get(Session, openid_identity),
-    %% for now, just crash if they already have a user object. They shouldn't
-    %% be posting this form and a better error response can be provided later.
-    case vbo_model_user:get_id_by_openid(OpenIDIdentity) of
-        {ok, notfound} ->
-            {POSTVars, Req2} = cowboy_http_req:body_qs(Req1),
-            {_, Nickname} = lists:keyfind(<<"nickname">>, 1, POSTVars),
-            User = [{<<"nickname">>, Nickname}
-                    ,{<<"openid_identity">>, OpenIDIdentity}],
-            {ok, UID} = vbo_model_user:new(User),
-            Location = [<<"/user/">>,UID],
-            IOData = [<<"registered! now you can return to /auth/openid to "
-                        "authenticate and your session id will grant you access"
-                        " to your resources. The new resource is at ">>, Location],
-            {ok, Req3} = cowboy_http_req:set_resp_header(<<"Location">>, Location, Req2),
-            {201, IOData, Req3}
+            {ok, Req2} = cowboy_http_req:set_resp_body(Body, Req1),
+            {{false, WWWAuthVal}, Req2, State};
+        {ok, OpenIDIdentity} ->
+            case vbo_model_user:get_id_by_openid(OpenIDIdentity) of
+                {ok, notfound} ->
+                    {true, Req1, State};
+                _ ->
+                    {ok, Req2} = cowboy_http_req:set_resp_body(Body, Req1),
+                    {{false, WWWAuthVal}, Req2, State}
+            end
     end.
 
-terminate(_Req, _State) ->
-    ok.
+post_from_form(Req, _State) ->
+    {Session, Req1} = cowboy_session:from_req(Req),
+    {ok, OpenIDIdentity} = vbo_session:get(Session, openid_identity),
+    {POSTVars, Req2} = cowboy_http_req:body_qs(Req1),
+    {_, Nickname} = lists:keyfind(<<"nickname">>, 1, POSTVars),
+    User = [{<<"nickname">>, Nickname}
+            ,{<<"openid_identity">>, OpenIDIdentity}],
+    {ok, UID} = vbo_model_user:new(User),
+    {true, Req2, UID}.
+
+post_is_create(Req, State) ->
+    {true, Req, State}.
+
+created_path(Req, State = UID) ->
+    Path = iolist_to_binary([<<"/user/">>, UID]),
+    {Path, Req, State}.
