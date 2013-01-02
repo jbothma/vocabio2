@@ -44,20 +44,7 @@ request('GET', [], Req) ->
     WordViewData = [{<<"user_words">>, UserWords},
                     {<<"userid">>, UserID}],
     {ok, IOData} = view_user_userid_word_dtl:render(WordViewData),
-    {200, IOData, Req2};
-request('POST', [<<"delete">>], Req) ->
-    {Session, Req1} = cowboy_session:from_req(Req),
-    {ok, UserID} = vbo_session:get(Session, user_id),
-    %% for now just crash if the resource userid doesn't match the
-    %% session userid to restrict access to the user resource
-    {UserID, Req2} = cowboy_http_req:binding(userid, Req1),
-    {WordID, Req3} = cowboy_http_req:binding(wordid, Req2),
-    ok = vbo_model_user_words:delete_word(UserID, WordID),
-    {ok, UserWords} = vbo_model_user_words:get(UserID),
-    WordViewData = [{<<"user_words">>, UserWords},
-                    {<<"userid">>, UserID}],
-    {ok, IOData} = view_user_userid_word_dtl:render(WordViewData),
-    {200, IOData, Req3}.
+    {200, IOData, Req2}.
 
 
 terminate(_Req, _State) ->

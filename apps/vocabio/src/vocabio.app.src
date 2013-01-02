@@ -11,7 +11,8 @@
                   openid,
                   cowboy,
                   poolboy,
-                  riakc
+                  riakc,
+                  ux
                  ]},
   {mod, { vocabio_app, []}},
   {env, []}

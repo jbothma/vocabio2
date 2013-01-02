@@ -28,6 +28,12 @@ start() ->
     ok = application:start(ossp_uuid),
     ok = application:start(esupervisor),
     ok = application:start(poolboy),
+    ok = application:start(protobuffs),
+    ok = application:start(riak_pb),
+    ok = application:start(riakc),
+    ok = application:start(ux),
+    ok = application:start(xmerl),
+    ok = application:start(openid),
     ok = application:start(vocabio),
     ok.
 
@@ -41,15 +47,18 @@ start(_StartType, _StartArgs) ->
                 ,{[<<"user">>], res_user, []}
                 ,{[<<"user">>, userid], res_user_userid, []}
                 ,{[<<"user">>, userid, <<"word">>], res_user_userid_word, []}
-                ,{[<<"user">>, userid, <<"word">>, wordid, '...'],
-                  res_user_userid_word, []}
+                ,{[<<"user">>, userid, <<"word">>, wordid, <<"delete">>],
+                  res_user_userid_word_wordid_delete, []}
                ]}
         ],
     %% Name, NbAcceptors, Transport, TransOpts, Protocol, ProtoOpts
-    cowboy:start_listener(my_http_listener, 100,
-                          cowboy_tcp_transport, [{port, 8080}],
-                          cowboy_http_protocol, [{dispatch, Dispatch},
-                                                 {onrequest, fun cowboy_session:on_request/1}]
+    cowboy:start_listener(vocabio_http_listener,
+                          100,
+                          cowboy_tcp_transport,
+                          [{port, 8080}],
+                          cowboy_http_protocol,
+                          [{dispatch, Dispatch},
+                           {onrequest, fun cowboy_session:on_request/1}]
                          ),
     vocabio_sup:start_link().
 
