@@ -1,51 +1,70 @@
 -module(res_user_userid_word).
 
--export([init/3, handle/2, terminate/2]).
+-export([
+         init/3
+         ,allowed_methods/2
+         ,content_types_accepted/2
+         ,content_types_provided/2
+         ,is_authorized/2
+         ,post_from_form/2
+         ,post_is_create/2
+         ,to_text_html/2
+         ,process_post/2
+         ,created_path/2
+        ]).
 
-init({tcp, http}, Req, _Opts) ->
-    {ok, Req, undefined_state}.
+init(_Transport, _Req, _Opts) ->
+    {upgrade, protocol, cowboy_http_rest}.
 
-handle(Req, State) ->
-    {Path, Req1} = cowboy_http_req:path_info(Req),
-    {Method, Req2} = cowboy_http_req:method(Req1),
-    {Code, RespBody, Req3} = request(Method, Path, Req2),
-    {ok, Req4} = cowboy_http_req:reply(Code, [], RespBody, Req3),
-    {ok, Req4, State}.
+allowed_methods(Req, State) ->
+    {['POST', 'GET'], Req, State}.
 
-request('POST', undefined, Req) ->
-    request('POST', [], Req);
-request('POST', [], Req) ->
-    {Session, Req1} = cowboy_session:from_req(Req),
-    {ok, UserID} = vbo_session:get(Session, user_id),
-    %% for now just crash if the resource userid doesn't match the
+content_types_accepted(Req, State) ->
+    Callbacks =
+        [{{<<"application">>, <<"x-www-form-urlencoded">>, []}, post_from_form}],
+    {Callbacks, Req, State}.
 
-    %% session userid to restrict access to the user resource
-    {UserID, Req2} = cowboy_http_req:binding(userid, Req1),
-    {POSTVars, Req3} = cowboy_http_req:body_qs(Req2),
+content_types_provided(Req, State) ->
+    {[{{<<"text">>, <<"html">>, []}, to_text_html}], Req, State}.
+
+is_authorized(Req, State) ->
+    vbo_auth:is_authorized(Req, State).
+
+post_from_form(Req, State) ->
+io:format("post_from_form\n"),
+    {UserID, Req1} = cowboy_http_req:binding(userid, Req),
+    {POSTVars, Req2} = cowboy_http_req:body_qs(Req1),
     {_, Word} = lists:keyfind(<<"word">>, 1, POSTVars),
     WordInData = [{<<"word">>, Word}, {<<"userid">>, UserID}],
     {ok, WordID} = vbo_model_user_words:add_word(UserID, WordInData),
-    Location = [<<"/user/">>, UserID, <<"/word/">>, cowboy_http:urlencode(WordID)],
-    {ok, Req4} = cowboy_http_req:set_resp_header(<<"Location">>, Location, Req3),
-    {ok, UserWords} = vbo_model_user_words:get(UserID),
-    WordViewData = [{<<"user_words">>, UserWords},
-                    {<<"userid">>, UserID}],
-    {ok, IOData} = view_user_userid_word_dtl:render(WordViewData),
-    {201, IOData, Req4};
-request('GET', undefined, Req) ->
-    request('GET', [], Req);
-request('GET', [], Req) ->
-    {Session, Req1} = cowboy_session:from_req(Req),
-    {ok, UserID} = vbo_session:get(Session, user_id),
-    %% for now just crash if the resource userid doesn't match the
-    %% session userid to restrict access to the user resource
+    %% Set location header directly here because create_path is called before
+    %% this function gets called.
+    Location = filename:join([<<"/user">>,
+                              UserID,
+                              <<"word">>,
+                              cowboy_http:urlencode(WordID)]),
+    {ok, Req3} = cowboy_http_req:set_resp_header(<<"Location">>, Location, Req2),
+    {true, Req3, State}.
+
+to_text_html(Req1, State) ->
     {UserID, Req2} = cowboy_http_req:binding(userid, Req1),
     {ok, UserWords} = vbo_model_user_words:get(UserID),
     WordViewData = [{<<"user_words">>, UserWords},
                     {<<"userid">>, UserID}],
     {ok, IOData} = view_user_userid_word_dtl:render(WordViewData),
-    {200, IOData, Req2}.
+    {IOData, Req2, State}.
 
+process_post(Req, State) ->
+io:format("process_post\n"),
+    %% This is sufficient while we just crash out if the post can't be
+    %% processed.
+    {true, Req, State}.
 
-terminate(_Req, _State) ->
-    ok.
+post_is_create(Req, State) ->
+    io:format("post_is_create\n"),
+    {true, Req, State}.
+
+created_path(Req, State) ->
+    {UserID, Req1} = cowboy_http_req:binding(userid, Req),
+    Path = iolist_to_binary(["/user/", UserID, "/word"]),
+    {Path, Req1, State}.
