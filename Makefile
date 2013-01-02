@@ -1,11 +1,11 @@
 all: compile
 
-small: compile_small
+small: compile-small
 
 compile: get-deps
 	rebar compile
 
-compile_small:
+compile-small:
 	rebar compile skip_deps=true
 
 get-deps:
@@ -17,6 +17,12 @@ shell: compile
 	    -s vocabio_app  start\
 	    -config etc/app.config \
 	    -name vocabio@127.0.0.1
+
+rel: compile rel-clean
+	rebar generate
+
+rel-clean:
+	rm -rf rel/vocabio
 
 clean:
 	rebar clean skip_deps=true
