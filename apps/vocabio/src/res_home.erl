@@ -23,7 +23,7 @@ request('GET', [], Req) ->
             {ok, UserID} ->
                 [{<<"userid">>, UserID}]
         end,
-    {ok, IoData} = base_dtl:render(ViewData),
+    {ok, IoData} = home_dtl:render(ViewData),
     {200, IoData, Req1}.
 
 terminate(_Req, _State) ->

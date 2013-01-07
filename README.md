@@ -18,11 +18,11 @@ Features
 * OpenID authentication
 * Add word
 * List words
+* Delete words
 
 Desired features
 ----------------
 
-* Delete words
 * known/unknown status on word
 * store word context
   * e.g. if I add a word from a browser plugin while reading on a website, the
@@ -61,12 +61,12 @@ Building
 
 run ```make``` to compile.
 
-Eventually, ```make rel``` will produce an erlang release.
+```make rel``` produces an erlang release.
 
 Running
 -------
 
-```make shell``` will start an erlang VM running the site, listening on 8080.
+```make shell``` starts an erlang VM running the site, listening on 8080.
 
 The browser view will be based on the REST API but returning HTML instead of JSON.
 

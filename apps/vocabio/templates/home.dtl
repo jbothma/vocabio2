@@ -1,0 +1,32 @@
+{% extends "base.dtl" %}
+
+{% block content %}
+
+<h1>Vocabio</h1>
+
+<p>
+This is an online tool for storing and reviewing words. An example of its use is
+recording unknown words for improving vocabulary while reading a foreign language.
+The utility of this tool might be extended with integration with other services,
+e.g. Folkets Lexicon or similar for other languages, pronunciation guides, browser
+or other application plugins. The main goal of this site is to provide a backend
+for reducing the friction when trying to record and review words.
+</p>
+
+<p>
+This is a rewrite of the first iteration of the site, hence the vocabio2 repo
+name. I'll probably change that when all the old functionality is replaced and
+this goes live.
+</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Add word</li>
+<li>List words</li>
+<li>Delete words</li>
+<li>OpenID authentication</li>
+</ul>
+
+<p>The development project is based at <a href="http://github.com/jbothma/vocabio/">http://github.com/jbothma/vocabio/</a></p>
+{% endblock %}
