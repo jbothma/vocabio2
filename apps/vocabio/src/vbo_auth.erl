@@ -6,7 +6,7 @@
 
 is_authorized(Req, State) ->
     {Session, Req1} = cowboy_session:from_req(Req),
-    {ok, UserID} = vbo_session:get(Session, user_id),
+    {ok, UserID} = vbo_session:get(Session, userid),
     case cowboy_http_req:binding(userid, Req1) of
         {UserID, Req2} ->
             {true, Req2, State};

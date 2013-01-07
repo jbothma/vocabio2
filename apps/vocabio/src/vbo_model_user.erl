@@ -4,6 +4,7 @@
          new/1
          ,get/1
          ,get_id_by_openid/1
+         ,delete/1
         ]).
 
 new(UserProplist) ->
@@ -12,6 +13,8 @@ new(UserProplist) ->
     {_, OpenIDIdentity} = lists:keyfind(<<"openid_identity">>, 1, UserProplist),
     OpenIDUser = [{<<"user_key">>, UKey}],
     ok = vbo_db:put(<<"openid_identity_user">>, OpenIDIdentity, OpenIDUser),
+    UserOpenIDID = [{<<"openid_identity">>, OpenIDIdentity}],
+    ok = vbo_db:put(<<"user_openid_identity">>, UKey, UserOpenIDID),
     {ok, UKey}.
 
 get(UserID) ->
@@ -23,7 +26,7 @@ get(UserID) ->
     end.
 
 get_id_by_openid(OpenIDIdentity) ->
-    %% This is an opportunity to use links in riak to immediately
+    %% TODO: This is an opportunity to use links in riak to immediately
     %% get the user if the mapping exists
     case vbo_db:get(<<"openid_identity_user">>, OpenIDIdentity) of
         {ok, notfound} ->
@@ -31,3 +34,11 @@ get_id_by_openid(OpenIDIdentity) ->
         {ok, [{<<"user_key">>, UKey}]} ->
             {ok, UKey}
     end.
+
+delete(UserID) ->
+    ok = vbo_model_user_words:delete(UserID),
+    {ok, [{<<"openid_identity">>, OpenIDIdentity}]} =
+        vbo_db:get(<<"user_openid_identity">>, UserID),
+    ok = vbo_db:delete(<<"user_openid_identity">>, UserID),
+    ok = vbo_db:delete(<<"openid_identity_user">>, OpenIDIdentity),
+    ok = vbo_db:delete(<<"user">>, UserID).

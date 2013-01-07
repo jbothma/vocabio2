@@ -1,7 +1,7 @@
 %% -*- mode:erlang -*-
 {application, vocabio,
  [
-  {description, ""},
+  {description, "Vocabio web application"},
   {vsn, "1"},
   {registered, []},
   {applications, [

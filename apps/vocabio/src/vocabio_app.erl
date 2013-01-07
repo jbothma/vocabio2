@@ -43,9 +43,10 @@ start(_StartType, _StartArgs) ->
          %% {Host, list({Path, Handler, Opts})}
          {'_', [
                 {[], res_home, []}
-                ,{[<<"auth">>, <<"openid">>, '...'], res_auth, []}
+                ,{[<<"auth">>, <<"openid">>, '...'], res_auth_openid, []}
                 ,{[<<"user">>], res_user, []}
                 ,{[<<"user">>, userid], res_user_userid, []}
+                ,{[<<"user">>, userid, <<"delete">>], res_user_userid_delete, []}
                 ,{[<<"user">>, userid, <<"word">>], res_user_userid_word, []}
                 ,{[<<"user">>, userid, <<"word">>, wordid, <<"delete">>],
                   res_user_userid_word_wordid_delete, []}

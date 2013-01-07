@@ -2,9 +2,20 @@
 
 {% block content %}
 
+{% if openid_identity %}
+
+You have identified yourself but you're not signed up yet. Sign up now!
+
 <form name="input" action="/user" method="post">
   Nickname: <input type="text" name="nickname"/>
   <input type="submit" value="Submit"/>
 </form>
+
+{% endif %}
+{% if auth_url %}
+
+<a href="{{ auth_url }}">Authenticate with your Google ID</a>
+
+{% endif %}
 
 {% endblock %}

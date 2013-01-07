@@ -17,7 +17,7 @@ request('GET', undefined, Req) ->
 request('GET', [], Req) ->
     {Session, Req1} = cowboy_session:from_req(Req),
     ViewData =
-        case vbo_session:get(Session, user_id) of
+        case vbo_session:get(Session, userid) of
             {ok, notfound} ->
                 [];
             {ok, UserID} ->

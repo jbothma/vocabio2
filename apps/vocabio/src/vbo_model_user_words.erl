@@ -4,6 +4,7 @@
          add_word/2
          ,delete_word/2
          ,get/1
+         ,delete/1
         ]).
 
 -define(WORD_URI(UserID, WordID),
@@ -48,3 +49,10 @@ get(UserID) ->
         {ok, UserWords} ->
             {ok, UserWords}
     end.
+
+delete(UserID) ->
+    {ok, UserWords} = vbo_db:get(<<"user_words">>, UserID),
+    lists:map(fun(Word) ->
+                      {ok, _} = vbo_model_user_word:delete(UserID, Word)
+              end, UserWords),
+    ok = vbo_db:delete(<<"user_words">>, UserID).

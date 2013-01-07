@@ -5,5 +5,8 @@
 <p>Nickname: {{ user.nickname }}</p>
 <p>OpenID Identity: {{ user.openid_identity }}</p>
 <p><a href="/user/{{ userid }}/word">Your words</a></p>
-
+<p>
+  <form name="delete_user" action="/user/{{ userid }}/delete" method="POST">
+    <input type="submit" value="Delete user data" />
+  </form>
 {% endblock %}

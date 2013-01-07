@@ -1,7 +1,0 @@
-{% extends "base.dtl" %}
-
-{% block content %}
-
-<a href="{{ auth_url }}">Authenticate with your Google ID</a>
-
-{% endblock %}
