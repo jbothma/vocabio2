@@ -25,7 +25,7 @@ start() ->
     ok = application:start(ssl),
     ok = application:start(cowboy),
     ok = application:start(gproc),
-    ok = application:start(ossp_uuid),
+    %ok = application:start(ossp_uuid),
     ok = application:start(esupervisor),
     ok = application:start(poolboy),
     ok = application:start(protobuffs),

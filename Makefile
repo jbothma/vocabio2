@@ -1,15 +1,17 @@
+REBAR=./rebar
+
 all: compile
 
 small: compile-small
 
 compile: get-deps
-	rebar compile
+	$(REBAR) compile
 
 compile-small:
 	rebar compile skip_deps=true
 
 get-deps:
-	rebar get-deps
+	$(REBAR) get-deps
 
 shell: compile
 	erl -pa deps/*/ebin \
@@ -19,10 +21,10 @@ shell: compile
 	    -name vocabio@127.0.0.1
 
 rel: compile rel-clean
-	rebar generate
+	$(REBAR) generate
 
 rel-clean:
 	rm -rf rel/vocabio
 
 clean:
-	rebar clean skip_deps=true
+	$(REBAR) clean skip_deps=true
