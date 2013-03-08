@@ -28,3 +28,9 @@ rel-clean:
 
 clean:
 	$(REBAR) clean skip_deps=true
+
+test: compile ct
+
+ct:
+	mkdir -p log
+	ct_run -dir test -pa deps/*/ebin apps/*/ebin test -logdir log

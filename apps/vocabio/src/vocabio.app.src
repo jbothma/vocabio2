@@ -4,16 +4,28 @@
   {description, "Vocabio web application"},
   {vsn, "1"},
   {registered, []},
-  {applications, [
-                  kernel,
-                  stdlib,
-                  lager,
-                  openid,
-                  cowboy,
-                  poolboy,
-                  riakc,
-                  ux
-                 ]},
+  {applications,
+   [kernel
+    ,stdlib
+    ,compiler
+    ,syntax_tools
+    ,lager
+    ,sasl
+    ,crypto
+    ,public_key
+    ,inets
+    ,ssl
+    ,cowboy
+    ,gproc
+    ,esupervisor
+    ,poolboy
+    ,protobuffs
+    ,riak_pb
+    ,riakc
+    ,ux
+    ,xmerl
+    ,openid
+   ]},
   {mod, { vocabio_app, []}},
   {env, []}
  ]}.

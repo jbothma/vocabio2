@@ -5,6 +5,7 @@
 %% Application callbacks
 -export([
          start/0
+         ,stop/0
          ,start/2
          ,stop/1
         ]).
@@ -12,30 +13,6 @@
 %% ===================================================================
 %% Application callbacks
 %% ===================================================================
-
-start() ->
-    {ok, _} = reloader:start(),
-    ok = application:start(compiler),
-    ok = application:start(syntax_tools),
-    ok = application:start(lager),
-    ok = application:start(sasl),
-    ok = application:start(crypto),
-    ok = application:start(public_key),
-    ok = application:start(inets),
-    ok = application:start(ssl),
-    ok = application:start(cowboy),
-    ok = application:start(gproc),
-    %ok = application:start(ossp_uuid),
-    ok = application:start(esupervisor),
-    ok = application:start(poolboy),
-    ok = application:start(protobuffs),
-    ok = application:start(riak_pb),
-    ok = application:start(riakc),
-    ok = application:start(ux),
-    ok = application:start(xmerl),
-    ok = application:start(openid),
-    ok = application:start(vocabio),
-    ok.
 
 start(_StartType, _StartArgs) ->
     Dispatch =
@@ -65,3 +42,33 @@ start(_StartType, _StartArgs) ->
 
 stop(_State) ->
     ok.
+
+%% Development support
+start() ->
+    {ok, _} = reloader:start(),
+    ok = application:load(vocabio),
+    {ok, Apps} = application:get_key(vocabio, applications),
+    true = lists:all(fun ensure_started/1, Apps ++ [vocabio]),
+    ok.
+
+stop() ->
+    stopped = reloader:stop(),
+    {ok, Apps} = application:get_key(vocabio, applications),
+    true = lists:all(fun(kernel)  -> true;
+                       (AppName) -> ensure_stopped(AppName)
+                  end, Apps ++ [vocabio]),
+    ok.
+
+ensure_started(AppName) ->
+    case {AppName, application:start(AppName)} of
+        {AppName, ok} ->
+            true;
+        {AppName, {error, {already_started, AppName}}} ->
+            true
+    end.
+
+ensure_stopped(AppName) ->
+    case {AppName, application:stop(AppName)} of
+        {AppName, ok} ->
+            true
+    end.

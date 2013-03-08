@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jbothma/vocabio2.png?branch=master)](https://travis-ci.org/jbothma/vocabio2)
+
 Vocabio
 =======
 
