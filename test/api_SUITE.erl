@@ -7,6 +7,7 @@
 -compile(export_all).
 
 -include_lib("common_test/include/ct.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 suite() ->
     [{timetrap,{seconds,30}}].
@@ -48,9 +49,11 @@ my_test_case(Config) ->
     ct:pal("~p~n~p~n~p~n",[StatusCode, RespHeads, RespBody]),
     BodyJSON = jsx:decode(RespBody),
 
-    AuthURL = proplists:get_value(<<"auth_url">>, BodyJSON),
+    ?assertEqual(<<"http://mock.auth/url">>,
+                 proplists:get_value(<<"auth_url">>, BodyJSON)),
 
-    {StatusCode2, RespHeads2, RespBody2} = request(binary_to_list(AuthURL)),
+    ReturnURL = ?config(base_url, Config) ++ "auth/openid/return",
+    {StatusCode2, RespHeads2, RespBody2} = request(ReturnURL),
     ct:pal("~p~n~p~n~s~n",[StatusCode2, RespHeads2, RespBody2]),
     ok.
 

@@ -57,7 +57,7 @@ get_start(Req, State) ->
     Realm = BaseURL,
     AuthURL =
         openid:authentication_url(AuthReq, ?RETURN_URL(BaseURL), Realm, Assoc),
-    ViewData = [{<<"auth_url">>, list_to_binary(AuthURL)}],
+    ViewData = [{<<"auth_url">>, AuthURL}],
     {ViewData, Req1, State}.
 
 get_return(Req, State) ->

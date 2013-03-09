@@ -17,9 +17,9 @@ start() ->
                      end),
     ok = meck:expect(openid, authentication_url,
                      fun(mock_openid_auth_req,
-                         ReturnURL, _Realm,
+                         _ReturnURL, _Realm,
                          mock_openid_association) ->
-                             ReturnURL
+                             <<"http://mock.auth/url">>
                      end),
     ok = meck:expect(openid, verify,
                      fun(_ReturnURL, mock_openid_association,
