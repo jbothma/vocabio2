@@ -5,6 +5,7 @@
          ,allowed_methods/2
          ,content_types_provided/2
          ,to_text_html/2
+         ,to_application_json/2
         ]).
 
 -define(RETURN_URL(BaseURL), BaseURL++"auth/openid/return").
@@ -16,7 +17,12 @@ allowed_methods(Req, State) ->
     {['GET'], Req, State}.
 
 content_types_provided(Req, State) ->
-    {[{{<<"text">>, <<"html">>, []}, to_text_html}], Req, State}.
+    Callbacks =
+        [
+         {{<<"text">>, <<"html">>, []}, to_text_html}
+         ,{{<<"application">>, <<"json">>, []}, to_application_json}
+        ],
+    {Callbacks, Req, State}.
 
 to_text_html(Req, State) ->
     {ViewData, Req2, State1} =
@@ -31,6 +37,16 @@ to_text_html(Req, State) ->
     {ok, RespBody} = view_auth_openid_dtl:render(ViewData),
     {RespBody, Req2, State1}.
 
+to_application_json(Req, State) ->
+    case cowboy_http_req:path_info(Req) of
+        {[], Req1} ->
+            {ViewData, Req2, State1} = get_start(Req1, State),
+            {jsx:encode(ViewData), Req2, State1};
+        {[<<"return">>], Req1} ->
+            {ViewData, Req2, State1} = get_return(Req1, State),
+            {jsx:encode(ViewData), Req2, State1}
+    end.
+
 get_start(Req, State) ->
     GoogleOpenID = "https://www.google.com/accounts/o8/id",
     AuthReq = openid:discover(GoogleOpenID),
@@ -41,7 +57,7 @@ get_start(Req, State) ->
     Realm = BaseURL,
     AuthURL =
         openid:authentication_url(AuthReq, ?RETURN_URL(BaseURL), Realm, Assoc),
-    ViewData = [{<<"auth_url">>, AuthURL}],
+    ViewData = [{<<"auth_url">>, list_to_binary(AuthURL)}],
     {ViewData, Req1, State}.
 
 get_return(Req, State) ->

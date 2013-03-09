@@ -56,8 +56,8 @@ is_authorized(Req, State) ->
                             {{false, WWWAuthVal}, Req2, State}
                     end
             end;
-        {'GET', Req1} ->
-            {true, Req1, State}
+       {'GET', Req1} ->
+            vbo_auth:is_authorized(Req1, State)
     end.
 
 post_from_form(Req, _State) ->

@@ -24,7 +24,12 @@ content_types_accepted(Req, State) ->
     {Callbacks, Req, State}.
 
 content_types_provided(Req, State) ->
-    {[{{<<"text">>, <<"html">>, []}, to_text_html}], Req, State}.
+    Callbacks =
+        [
+         {{<<"text">>, <<"html">>, []}, to_text_html}
+         ,{{<<"application">>, <<"json">>, []}, to_application_json}
+        ],
+    {Callbacks, Req, State}.
 
 is_authorized(Req, State) ->
     vbo_auth:is_authorized(Req, State).
@@ -51,6 +56,9 @@ to_text_html(Req1, State) ->
                     {<<"userid">>, UserID}],
     {ok, IOData} = view_user_userid_word_dtl:render(WordViewData),
     {IOData, Req2, State}.
+
+to_application_json(Req1, State) ->
+    ok.
 
 post_is_create(Req, State) ->
     {true, Req, State}.

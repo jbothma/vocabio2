@@ -9,8 +9,8 @@
     ,stdlib
     ,compiler
     ,syntax_tools
-    ,lager
     ,sasl
+    ,lager
     ,crypto
     ,public_key
     ,inets
